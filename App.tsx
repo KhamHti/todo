@@ -1,118 +1,114 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
+  StatusBar,
+  useColorScheme,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
+import React, {useState} from 'react';
+import {ToDoItem} from './src/components/ToDoItem';
+import colors from './src/config/colors';
+import spacing from './src/config/spacing';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): JSX.Element {
+const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const initTodos = [
+    'go to shop',
+    'eat at least a one healthy foods',
+    'Do some exercises',
+  ];
+  const [todos, setTodos] = useState(initTodos);
+  const [newTodo, setNewTodo] = useState('');
+
+  const addTodo = () => {
+    if (!newTodo.trim()) {
+      return;
+    }
+    setTodos([...todos, newTodo]);
+    setNewTodo('');
+  };
+
+  const deleteItem = (todo: string) => {
+    setTodos([...todos.filter(i => i !== todo)]);
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <SafeAreaView style={styles.constainer}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <ScrollView>
+        <View style={styles.appTitleView}>
+          <Text style={styles.appTitleText}>To Do List</Text>
+        </View>
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={styles.textInput}
+            value={newTodo}
+            onChangeText={text => setNewTodo(text)}
+            placeholder="add to do list"
+          />
+        </View>
+        <TouchableOpacity onPress={addTodo} style={styles.buttonView}>
+          <Text style={styles.btnText}>Add to do</Text>
+        </TouchableOpacity>
+
+        <View>
+          {todos.map(todo => (
+            <ToDoItem key={todo} todo={todo} deleteItem={deleteItem} />
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+};
 
 export default App;
+
+const styles = StyleSheet.create({
+  constainer: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  appTitleView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: spacing,
+  },
+  appTitleText: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: colors.dark,
+  },
+  textInputContainer: {
+    marginVertical: spacing * 2,
+    borderRadius: 10,
+    marginHorizontal: spacing,
+  },
+  textInput: {
+    borderRadius: spacing,
+    height: spacing * 5,
+    borderWidth: 1,
+    margin: spacing,
+    backgroundColor: colors.primary,
+    padding: spacing,
+  },
+  buttonView: {
+    backgroundColor: colors.btn,
+    width: '69%',
+    height: spacing * 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: spacing,
+    marginBottom: spacing * 2,
+  },
+  btnText: {
+    color: colors['dark-light'],
+    fontWeight: '800',
+    fontSize: 18,
+  },
+});
